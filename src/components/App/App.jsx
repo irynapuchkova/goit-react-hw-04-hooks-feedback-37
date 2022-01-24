@@ -6,50 +6,27 @@ import Statistics from '../Statistics';
 import FeedbackOptions from '../FeedbackOptions';
 import Notification from '../Notification';
 
+const initialState = { good: 0, neutral: 0, bad: 0 };
+
 export default function App() {
-  const [good, setGood] = useState(0);
-  const [neutral, setNeutral] = useState(0);
-  const [bad, setBad] = useState(0);
+  const [state, setState] = useState(initialState);
 
-  const option = {
-    good,
-    neutral,
-    bad,
-  };
-  const statistics = Object.entries(option);
-  const options = Object.keys(option);
-  const value = Object.values(option);
-
-  const onButtonClick = e => {
-    const state = e.currentTarget.innerText.toLowerCase();
-    switch (state) {
-      case 'good':
-        setGood(good => good + 1);
-        break;
-      case 'neutral':
-        setNeutral(neutral => neutral + 1);
-        break;
-      case 'bad':
-        setBad(bad => bad + 1);
-        break;
-      default:
-        return;
-    }
+  const onButtonClick = ({ currentTarget: { innerText } }) => {
+    setState(state => ({ ...state, [innerText]: state[innerText] + 1 }));
   };
 
   const countTotalFeedback = () => {
-    return value.reduce((acc, value) => acc + value);
+    return Object.values(state).reduce((acc, value) => acc + value);
   };
 
   const countPositiveFeedbackPercentage = () => {
-    const positivePercentage = Number.parseInt(
-      (good * 100) / countTotalFeedback(),
-    );
-    return positivePercentage;
+    return Number.parseInt((state.good * 100) / countTotalFeedback());
   };
 
-  const total = countTotalFeedback(value);
-  const positivePercentage = countPositiveFeedbackPercentage(total);
+  const total = countTotalFeedback();
+  const positivePercentage = countPositiveFeedbackPercentage();
+  const statistics = Object.entries(state);
+  const options = Object.keys(state);
 
   return (
     <>
